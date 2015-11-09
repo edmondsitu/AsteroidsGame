@@ -1,22 +1,70 @@
 //your variable declarations here
+Stars [] field;
 SpaceShip bob;
 public void setup() 
 {
   //your code here
   size(500,500);
-  bob = new SpaceShip();
+  field = new Stars [100];
+  for( int i = 0; i < field.length; i++)
+  {
+    field[i] = new Stars();
+  }
+  bob = new SpaceShip();  
 }
 public void draw() 
 {
   //your code here
   background(0);
+  for( int i = 0; i < field.length; i++)
+  {
+    field[i].show();
+  }
   bob.show();
-  //bob.move();
+  bob.move();  
 }
 public void keyPressed(){
-  if( key == 'h'){
-    bob.setX((int)(Math.random()*500));
+  if( keyCode == LEFT) //rotate left
+  {
+    bob.rotate(-10);
+  }
+  if( keyCode == RIGHT) //rotate right
+  {
+    bob.rotate(10);
+  }
+  if( keyCode == UP) //accelerate
+  {
+    bob.accelerate(0.1);
+  }
+  if( keyCode == DOWN) //decelerate
+  {
+    bob.accelerate(-0.1);
+  }
+  if( key == ' ') //hyperspace
+  {
+    bob.setX((int)(Math.random()*500));   
     bob.setY((int)(Math.random()*500));
+    bob.setDirectionX(0);
+    bob.setDirectionY(0);
+    bob.setPointDirection((int)(Math.random()*360));
+  }
+}
+class Stars
+{
+  int myColor;
+  int myPositionX;
+  int myPositionY;
+  Stars()
+  {
+    myColor = color(255);
+    myPositionX = (int)(Math.random()*width);
+    myPositionY = (int)(Math.random()*height);
+  }
+  void show()
+  {
+    noStroke();
+    fill(myColor);
+    ellipse(myPositionX, myPositionY, 5, 5);
   }
 }
 class SpaceShip extends Floater  
