@@ -6,8 +6,8 @@ SpaceShip bob;
 public void setup() 
 {
   //your code here
-  size(500,500);
-  starField = new Stars [100];
+  size(600,600);
+  starField = new Stars [200];
   asteroidField = new Asteroid [20];
   for( int i = 0; i < starField.length; i++)
   {
@@ -78,7 +78,7 @@ class Stars
   {
     noStroke();
     fill(myColor);
-    ellipse(myPositionX, myPositionY, 5, 5);
+    ellipse(myPositionX, myPositionY, 4, 4);
   }
 }
 class SpaceShip extends Floater  
@@ -160,8 +160,8 @@ class SpaceShip extends Floater
       xCorners[34] =1;
       yCorners[34] =-5;                                                                                     
       myColor = color(255,255,0);
-      myCenterX = 250;
-      myCenterY = 250;
+      myCenterX = width/2;
+      myCenterY = height/2;
       myDirectionX = 1;
       myDirectionY = 0;
       myPointDirection = 0;
@@ -202,8 +202,8 @@ class Asteroid extends Floater
     myColor = color(255,0,0);
     myCenterX = (int)(Math.random()*width);
     myCenterY = (int)(Math.random()*height);
-    myDirectionX = 0;
-    myDirectionY = 0;
+    myDirectionX = (Math.random()*2)-1;
+    myDirectionY = (Math.random()*2)-1;
     myPointDirection = 0;
     myRotSpeed = (int)((Math.random()*10) - 5);                 
   }
