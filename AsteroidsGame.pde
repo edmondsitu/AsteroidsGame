@@ -1,6 +1,6 @@
 //your variable declarations here
 Stars [] starField;
-Asteroid [] asteroidField;
+ArrayList <Asteroid> theList;
 SpaceShip bob;
 
 public void setup() 
@@ -8,14 +8,14 @@ public void setup()
   //your code here
   size(600,600);
   starField = new Stars [200];
-  asteroidField = new Asteroid [20];
+  theList = new ArrayList <Asteroid>();
+  for( int i = 0; i < 20; i++)
+  {
+    theList.add(i, new Asteroid());
+  }
   for( int i = 0; i < starField.length; i++)
   {
     starField[i] = new Stars();
-  }
-  for( int i = 0; i < asteroidField.length; i++)
-  {
-    asteroidField[i] = new Asteroid();
   }
   bob = new SpaceShip();  
 }
@@ -28,13 +28,21 @@ public void draw()
   {
     starField[i].show();
   }
-  for( int i = 0; i < asteroidField.length; i++)
+  for( int i = 0; i < theList.size(); i++) //when spaceship hit asteroid, remove asteroid
   {
-    asteroidField[i].show();
-    asteroidField[i].move();
+    if( dist( bob.getX(), bob.getY(), theList.get(i).getX(), theList.get(i).getY() ) < 20)
+    {
+      theList.remove(i);
+    }
+    else
+    {
+      theList.get(i).show();
+      theList.get(i).move();    
+    }
   }
+
   bob.show();
-  bob.move(); 
+  bob.move();
 }
 
 public void keyPressed(){
@@ -162,7 +170,7 @@ class SpaceShip extends Floater
       myColor = color(255,255,0);
       myCenterX = width/2;
       myCenterY = height/2;
-      myDirectionX = 1;
+      myDirectionX = 0;
       myDirectionY = 0;
       myPointDirection = 0;
     }
@@ -211,7 +219,7 @@ class Asteroid extends Floater
     {
       myCenterX += myDirectionX;    
       myCenterY += myDirectionY;
-      myPointDirection += myRotSpeed;     
+      myPointDirection += myRotSpeed;    
 
       //wrap around screen    
       if(myCenterX >width)
