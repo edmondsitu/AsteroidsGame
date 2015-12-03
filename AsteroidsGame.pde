@@ -1,10 +1,10 @@
 //your variable declarations here
-//working on Bullets class, make loop to move bullets
+//make spaceship rotate smoothly
 Stars [] starField;
 ArrayList <Asteroid> theList;
 SpaceShip bob;
 ArrayList <Bullets> bullList;
-Bullets bull;
+int scoreB = 0;
 
 public void setup() 
 {
@@ -22,7 +22,6 @@ public void setup()
     starField[i] = new Stars();
   }
   bob = new SpaceShip();
-  bull = new Bullets(bob); 
 }
 
 public void draw() 
@@ -35,24 +34,30 @@ public void draw()
   }
   for( int i = 0; i < theList.size(); i++) //when spaceship hit asteroid, remove asteroid
   {
-    if( dist( bob.getX(), bob.getY(), theList.get(i).getX(), theList.get(i).getY() ) < 20)
+    for( int j = 0; j < bullList.size(); j++)
     {
-      theList.remove(i);
+      if( dist( bullList.get(j).getX(), bullList.get(j).getY(), theList.get(i).getX(), theList.get(i).getY() ) < 20)
+      {
+        theList.remove(i);
+        bullList.remove(j);
+        scoreB++;
+      }
     }
-    else
-    {
-      theList.get(i).show();
-      theList.get(i).move();    
-    }
+
+    theList.get(i).show();
+    theList.get(i).move();
+
+  }
+  for( int j = 0; j < bullList.size(); j++)
+  {
+    bullList.get(j).show();
+    bullList.get(j).move();
   }
   bob.show();
   bob.move();
-  bull.show();
-  bull.move();
   textSize(32);
   fill(255,0,0);
-  text("score" + bull.getPointDirection(),50,50);
-  System.out.println(bullList.toString());
+  text("score" + scoreB,50,50);
 }
 
 public void keyPressed(){
