@@ -1,9 +1,14 @@
 //your variable declarations here
-//make spaceship rotate smoothly
+//make spaceship accelerate animation
 Stars [] starField;
 ArrayList <Asteroid> theList;
 SpaceShip bob;
 ArrayList <Bullets> bullList;
+boolean upKey = false;
+boolean downKey = false;
+boolean leftKey = false;
+boolean rightKey = false;
+
 int scoreB = 0;
 
 public void setup() 
@@ -43,16 +48,33 @@ public void draw()
         scoreB++;
       }
     }
-
     theList.get(i).show();
     theList.get(i).move();
-
   }
   for( int j = 0; j < bullList.size(); j++)
   {
     bullList.get(j).show();
     bullList.get(j).move();
   }
+
+  if( leftKey == true) //rotate left
+  {
+    bob.rotate(-10);
+  }
+  if( rightKey == true) //rotate right
+  {
+    bob.rotate(10);
+  }
+  if( upKey == true) //accelerate
+  {
+    bob.accelerate(0.1);
+    line(bob.getX() - 20, bob.getY(), bob.getX() - 50, bob.getY());
+  }
+  if( downKey == true) //decelerate
+  {
+    bob.accelerate(-0.1);
+  }
+
   bob.show();
   bob.move();
   textSize(32);
@@ -63,19 +85,19 @@ public void draw()
 public void keyPressed(){
   if( keyCode == LEFT) //rotate left
   {
-    bob.rotate(-10);
+    leftKey = true;
   }
   if( keyCode == RIGHT) //rotate right
   {
-    bob.rotate(10);
+    rightKey = true;
   }
   if( keyCode == UP) //accelerate
   {
-    bob.accelerate(0.1);
+    upKey = true;
   }
   if( keyCode == DOWN) //decelerate
   {
-    bob.accelerate(-0.1);
+    downKey = true;
   }
   if( key == ' ') //hyperspace
   {
@@ -89,6 +111,27 @@ public void keyPressed(){
   {
     bullList.add(new Bullets(bob));
   }
+}
+
+public void keyReleased(){
+
+  if( keyCode == LEFT) //rotate left
+  {
+    leftKey = false;
+  }
+  if( keyCode == RIGHT) //rotate right
+  {
+    rightKey = false;
+  }
+  if( keyCode == UP) //accelerate
+  {
+    upKey = false;
+  }
+  if( keyCode == DOWN) //decelerate
+  {
+    downKey = false;
+  }
+
 }
 class Stars
 {
