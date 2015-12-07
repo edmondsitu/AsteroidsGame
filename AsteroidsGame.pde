@@ -8,7 +8,7 @@ boolean upKey = false;
 boolean downKey = false;
 boolean leftKey = false;
 boolean rightKey = false;
-
+boolean startGame = false;
 int scoreB = 0;
 
 public void setup() 
@@ -18,7 +18,7 @@ public void setup()
   starField = new Stars [200];
   theList = new ArrayList <Asteroid>();
   bullList = new ArrayList <Bullets>();
-  for( int i = 0; i < 20; i++)
+  for( int i = 0; i < 10; i++)
   {
     theList.add(i, new Asteroid());
   }
@@ -32,73 +32,56 @@ public void setup()
 public void draw() 
 {
   //your code here
+  background(255,0,0);
+  textAlign(CENTER,CENTER);
+  textSize(100);
+  fill(0,0,0);
+  text("PLAY", width/2, height/2);
+  if( startGame == true){
   background(0);
-  for( int i = 0; i < starField.length; i++)
+  for( int i = 0; i < starField.length; i++) { starField[i].show(); } //show sky of stars
+  for( int i = 0; i < theList.size(); i++) //when bullet hits asteroid, remove asteroid and bullet
   {
-    starField[i].show();
-  }
-  for( int i = 0; i < theList.size(); i++) //when spaceship hit asteroid, remove asteroid
-  {
+    theList.get(i).show();
+    theList.get(i).move();
     for( int j = 0; j < bullList.size(); j++)
     {
       if( dist( bullList.get(j).getX(), bullList.get(j).getY(), theList.get(i).getX(), theList.get(i).getY() ) < 20)
       {
-        theList.remove(i);
         bullList.remove(j);
+        theList.remove(i);
         scoreB++;
+        break;
       }
     }
-    theList.get(i).show();
-    theList.get(i).move();
   }
-  for( int j = 0; j < bullList.size(); j++)
+  for( int j = 0; j < bullList.size(); j++) //move and show bullet in arraylist
   {
     bullList.get(j).show();
     bullList.get(j).move();
   }
 
-  if( leftKey == true) //rotate left
-  {
-    bob.rotate(-10);
-  }
-  if( rightKey == true) //rotate right
-  {
-    bob.rotate(10);
-  }
-  if( upKey == true) //accelerate
-  {
-    bob.accelerate(0.1);
-    line(bob.getX() - 20, bob.getY(), bob.getX() - 50, bob.getY());
-  }
-  if( downKey == true) //decelerate
-  {
-    bob.accelerate(-0.1);
-  }
+  if( leftKey == true) { bob.rotate(-10); } //rotate left
+  if( rightKey == true) { bob.rotate(10); } //rotate right
+  if( upKey == true) { bob.accelerate(0.1); } //accelerate
+  if( downKey == true) { bob.accelerate(-0.1); } //decelerate
 
   bob.show();
   bob.move();
   textSize(32);
   fill(255,0,0);
-  text("score" + scoreB,50,50);
+  text("Score: " + scoreB,100,50);
+  }
 }
 
+public void mousePressed(){
+  if( mouseX < width && mouseY < height){ startGame = true;}
+}
 public void keyPressed(){
-  if( keyCode == LEFT) //rotate left
-  {
-    leftKey = true;
-  }
-  if( keyCode == RIGHT) //rotate right
-  {
-    rightKey = true;
-  }
-  if( keyCode == UP) //accelerate
-  {
-    upKey = true;
-  }
-  if( keyCode == DOWN) //decelerate
-  {
-    downKey = true;
-  }
+  if( keyCode == LEFT){ leftKey = true; } //rotate left
+  if( keyCode == RIGHT){ rightKey = true; } //rotate right
+  if( keyCode == UP){ upKey = true; } //accelerate
+  if( keyCode == DOWN){ downKey = true; } //decelerate
   if( key == ' ') //hyperspace
   {
     bob.setX((int)(Math.random()*500));   
@@ -107,31 +90,20 @@ public void keyPressed(){
     bob.setDirectionY(0);
     bob.setPointDirection((int)(Math.random()*360));
   }
-  if( key == 'd')
-  {
-    bullList.add(new Bullets(bob));
+  if( key == 'd'){ bullList.add(new Bullets(bob)); } //add bullet to list and shoots
+  if( key == 's'){
+    for( int i = 0; i < 360; i+= 10){
+      bullList.add(new Bullets(bob));
+      bullList.get(bullList.size() - 1).hackSaver(i+10);
+    }
   }
 }
 
 public void keyReleased(){
-
-  if( keyCode == LEFT) //rotate left
-  {
-    leftKey = false;
-  }
-  if( keyCode == RIGHT) //rotate right
-  {
-    rightKey = false;
-  }
-  if( keyCode == UP) //accelerate
-  {
-    upKey = false;
-  }
-  if( keyCode == DOWN) //decelerate
-  {
-    downKey = false;
-  }
-
+  if( keyCode == LEFT){ leftKey = false; } //rotate left
+  if( keyCode == RIGHT){ rightKey = false; } //rotate right
+  if( keyCode == UP){ upKey = false; } //accelerate
+  if( keyCode == DOWN){ downKey = false; } //decelerate
 }
 class Stars
 {
@@ -272,6 +244,13 @@ class Bullets extends Floater
   public void setPointDirection(int degrees){ myPointDirection = degrees;}
   public double getPointDirection(){ return myPointDirection;}  
   
+  public void hackSaver(float newPoint){
+    myPointDirection = 0;
+    myPointDirection += newPoint;
+    double dRadians = myPointDirection*(Math.PI/180);
+    myDirectionX += 5* Math.cos(dRadians);
+    myDirectionY += 5* Math.sin(dRadians);
+  }
   public void show()
   {
     fill(myColor);
@@ -293,21 +272,21 @@ class Asteroid extends Floater
     corners = 6;
     xCorners = new int[corners];
     yCorners = new int[corners];
-    xCorners[0] = -11;
-    yCorners[0] = -8;
-    xCorners[1] = 7;
-    yCorners[1] = -8;
-    xCorners[2] = 13;
-    yCorners[2] = 0;
-    xCorners[3] = 6;
-    yCorners[3] = 10;
-    xCorners[4] = -11;
-    yCorners[4] = 8;
-    xCorners[5] = -5;
-    yCorners[5] = 0;
+    xCorners[0] = (int)(Math.random()*10-20);
+    yCorners[0] = (int)(Math.random()*10-22);
+    xCorners[1] = (int)(Math.random()*5+11);
+    yCorners[1] = (int)(Math.random()*10-22);
+    xCorners[2] = (int)(Math.random()*5+15);
+    yCorners[2] = (int)(Math.random()*5);
+    xCorners[3] = (int)(Math.random()*5+10);
+    yCorners[3] = (int)(Math.random()*5+12);
+    xCorners[4] = (int)(Math.random()*10-25);
+    yCorners[4] = (int)(Math.random()*5+8);
+    xCorners[5] = (int)(Math.random()*10-35);
+    yCorners[5] = (int)(Math.random()*5);
     myColor = color(255,0,0);
     myCenterX = (int)(Math.random()*width);
-    myCenterY = (int)(Math.random()*height);
+    myCenterY = 0;
     myDirectionX = (Math.random()*2)-1;
     myDirectionY = (Math.random()*2)-1;
     myPointDirection = 0;
