@@ -1,5 +1,5 @@
 //your variable declarations here
-//make spaceship accelerate animation
+//make spaceship accelerate animation, game over screen
 Stars [] starField;
 ArrayList <Asteroid> theList;
 SpaceShip bob;
@@ -9,6 +9,7 @@ boolean downKey = false;
 boolean leftKey = false;
 boolean rightKey = false;
 boolean startGame = false;
+boolean gameOverScreen = false;
 int scoreB = 0;
 
 public void setup() 
@@ -18,7 +19,7 @@ public void setup()
   starField = new Stars [200];
   theList = new ArrayList <Asteroid>();
   bullList = new ArrayList <Bullets>();
-  for( int i = 0; i < 10; i++)
+  for( int i = 0; i < 50; i++)
   {
     theList.add(i, new Asteroid());
   }
@@ -32,11 +33,14 @@ public void setup()
 public void draw() 
 {
   //your code here
-  background(255,0,0);
-  textAlign(CENTER,CENTER);
-  textSize(100);
-  fill(0,0,0);
-  text("PLAY", width/2, height/2);
+  if( startGame == false){
+    background(255,0,0);
+    textAlign(CENTER,CENTER);
+    textSize(100);
+    fill(0,0,0);
+    text("PLAY", width/2, height/2);
+  }
+
   if( startGame == true){
   background(0);
   for( int i = 0; i < starField.length; i++) { starField[i].show(); } //show sky of stars
@@ -44,9 +48,20 @@ public void draw()
   {
     theList.get(i).show();
     theList.get(i).move();
+    if( dist( bob.getX(), bob.getY(), theList.get(i).getX(), theList.get(i).getY()) < 20){
+      //startGame = false;
+      gameOverScreen = true;
+      bob.setX(width/2);
+      bob.setY(height/2);
+      bob.setDirectionX(0);
+      bob.setDirectionY(0);
+      for( int k = 0; k < theList.size(); k++){
+        theList.get(k).setY(0);
+      }
+    }
     for( int j = 0; j < bullList.size(); j++)
     {
-      if( dist( bullList.get(j).getX(), bullList.get(j).getY(), theList.get(i).getX(), theList.get(i).getY() ) < 20)
+      if( dist( bullList.get(j).getX(), bullList.get(j).getY(), theList.get(i).getX(), theList.get(i).getY() ) < 15)
       {
         bullList.remove(j);
         theList.remove(i);
@@ -59,6 +74,10 @@ public void draw()
   {
     bullList.get(j).show();
     bullList.get(j).move();
+    if(bullList.get(j).getX() > width || bullList.get(j).getX() < 0 || bullList.get(j).getY() > height || bullList.get(j).getY() < 0)
+    {
+      bullList.remove(j);
+    }
   }
 
   if( leftKey == true) { bob.rotate(-10); } //rotate left
@@ -72,10 +91,21 @@ public void draw()
   fill(255,0,0);
   text("Score: " + scoreB,100,50);
   }
+  if( gameOverScreen == true){
+    background(255,0,0);
+    textAlign(CENTER,CENTER);
+    textSize(100);
+    fill(0,0,0);
+    text("PLAY AGAIN?", width/2, height/2);
+  }
+  System.out.println(startGame);
 }
 
 public void mousePressed(){
-  if( mouseX < width && mouseY < height){ startGame = true;}
+  if( mouseX < width && mouseY < height){
+  startGame = true;
+  gameOverScreen = false;
+ }
 }
 public void keyPressed(){
   if( keyCode == LEFT){ leftKey = true; } //rotate left
@@ -223,20 +253,24 @@ class SpaceShip extends Floater
 
 class Bullets extends Floater
 {
+  private double mySecCenterX;
+  private double mySecCenterY;
   Bullets(SpaceShip theShip)
   {
     myCenterX = theShip.getX();
     myCenterY = theShip.getY();
     myPointDirection = theShip.getPointDirection();
     double dRadians =myPointDirection*(Math.PI/180);
+    mySecCenterX = theShip.getX()+Math.cos(dRadians)*30;
+    mySecCenterY = theShip.getY()+Math.sin(dRadians)*30;
     myDirectionX = 5 * Math.cos(dRadians) + theShip.getDirectionX();
     myDirectionY = 5 * Math.sin(dRadians) + theShip.getDirectionY();
     myColor = color(0,0,255);
   }
   public void setX(int x){ myCenterX = x;}
-  public int getX(){ return (int)myCenterX;}
+  public int getX(){ return (int)mySecCenterX;}
   public void setY(int y){ myCenterY = y;}
-  public int getY(){ return (int)myCenterY;}
+  public int getY(){ return (int)mySecCenterY;}
   public void setDirectionX(double x){ myDirectionX = x;}
   public double getDirectionX(){ return myDirectionX;}
   public void setDirectionY(double y){ myDirectionY = y;}
@@ -255,12 +289,16 @@ class Bullets extends Floater
   {
     fill(myColor);
     stroke(myColor);
-    ellipse((float)myCenterX,(float)myCenterY,6,6);
+    //ellipse((float)myCenterX,(float)myCenterY,6,6);
+    strokeWeight(5);
+    line((float)myCenterX, (float)myCenterY, (float)mySecCenterX, (float)mySecCenterY);
   }
   public void move()
   {
     myCenterX += myDirectionX;
     myCenterY += myDirectionY;
+    mySecCenterX += myDirectionX;
+    mySecCenterY += myDirectionY;
   }
 }
 
@@ -391,7 +429,8 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   public void show ()  //Draws the floater at the current position  
   {             
     fill(myColor);   
-    stroke(myColor);    
+    stroke(myColor);
+    strokeWeight(1);    
     //convert degrees to radians for sin and cos         
     double dRadians = myPointDirection*(Math.PI/180);                 
     int xRotatedTranslated, yRotatedTranslated;    
