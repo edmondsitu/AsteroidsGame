@@ -98,7 +98,6 @@ public void draw()
     fill(0,0,0);
     text("PLAY AGAIN?", width/2, height/2);
   }
-  System.out.println(startGame);
 }
 
 public void mousePressed(){
