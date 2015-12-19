@@ -10,6 +10,7 @@ boolean leftKey = false;
 boolean rightKey = false;
 boolean startGame = false;
 boolean gameOverScreen = false;
+int numOfAsteroids = 20;
 int scoreB = 0;
 
 public void setup() 
@@ -19,14 +20,15 @@ public void setup()
   starField = new Stars [200];
   theList = new ArrayList <Asteroid>();
   bullList = new ArrayList <Bullets>();
-  for( int i = 0; i < 50; i++)
-  {
+
+  for( int i = 0; i < numOfAsteroids; i++){
     theList.add(i, new Asteroid());
-  }
-  for( int i = 0; i < starField.length; i++)
-  {
+   }
+
+  for( int i = 0; i < starField.length; i++){
     starField[i] = new Stars();
-  }
+   }
+
   bob = new SpaceShip();
 }
 
@@ -34,98 +36,118 @@ public void draw()
 {
   //your code here
   if( startGame == false){
-    background(255,0,0);
+    background(0,153,153);
+    fill(0,255,0);
+    stroke(0,0,0);
+    strokeWeight(3);
+    rect( width/6, height/3, 2*width/3, height/3,10);
     textAlign(CENTER,CENTER);
     textSize(100);
     fill(0,0,0);
-    text("PLAY", width/2, height/2);
-  }
+    text("PLAY", width/2, height/2 - 50);
+    textSize(50);
+    text("Click to Play", width/2, height/2 + 50);
+   }
 
   if( startGame == true){
-  background(0);
-  for( int i = 0; i < starField.length; i++) { starField[i].show(); } //show sky of stars
-  for( int i = 0; i < theList.size(); i++) //when bullet hits asteroid, remove asteroid and bullet
-  {
-    theList.get(i).show();
-    theList.get(i).move();
-    if( dist( bob.getX(), bob.getY(), theList.get(i).getX(), theList.get(i).getY()) < 20){
-      //startGame = false;
-      gameOverScreen = true;
-      bob.setX(width/2);
-      bob.setY(height/2);
-      bob.setDirectionX(0);
-      bob.setDirectionY(0);
-      for( int k = 0; k < theList.size(); k++){
-        theList.get(k).setY(0);
-      }
-    }
-    for( int j = 0; j < bullList.size(); j++)
-    {
-      if( dist( bullList.get(j).getX(), bullList.get(j).getY(), theList.get(i).getX(), theList.get(i).getY() ) < 15)
-      {
+    background(0);
+    for( int i = 0; i < starField.length; i++) { starField[i].show(); } //show sky of stars
+
+    for( int i = 0; i < theList.size(); i++){
+      theList.get(i).show();
+      theList.get(i).move();
+
+      if( dist( bob.getX(), bob.getY(), theList.get(i).getX(), theList.get(i).getY()) < 20){ //when ship hit asteroid, game over screen
+        gameOverScreen = true;
+        bob.setX(width/2);
+        bob.setY(height/2);
+        bob.setDirectionX(0);
+        bob.setDirectionY(0);
+        bob.setPointDirection(0);
+        scoreB = 0;
+        if( theList.size() < numOfAsteroids || theList.size() == numOfAsteroids){
+          for(int add = theList.size(); add < numOfAsteroids; add++){
+            theList.add( new Asteroid());
+           }
+
+          for( int k = 0; k < theList.size(); k++){ //set asteroids' position at top or bottom
+            theList.get(k).setY(0);
+           }
+         }
+       }
+
+      for( int j = 0; j < bullList.size(); j++){ //when bullet hits asteroid, remove asteroid and bullet
+        if( dist( bullList.get(j).getX(), bullList.get(j).getY(), theList.get(i).getX(), theList.get(i).getY() ) < 15){
+          bullList.remove(j);
+          theList.remove(i);
+          scoreB++;
+          break;
+         }
+       }
+     }
+
+    for( int j = 0; j < bullList.size(); j++){ //move and show bullets in arraylist
+      bullList.get(j).show();
+      bullList.get(j).move();
+      if(bullList.get(j).getX() > width || bullList.get(j).getX() < 0 || bullList.get(j).getY() > height || bullList.get(j).getY() < 0){
         bullList.remove(j);
-        theList.remove(i);
-        scoreB++;
-        break;
-      }
-    }
-  }
-  for( int j = 0; j < bullList.size(); j++) //move and show bullet in arraylist
-  {
-    bullList.get(j).show();
-    bullList.get(j).move();
-    if(bullList.get(j).getX() > width || bullList.get(j).getX() < 0 || bullList.get(j).getY() > height || bullList.get(j).getY() < 0)
-    {
-      bullList.remove(j);
-    }
-  }
+       }
+     }
 
-  if( leftKey == true) { bob.rotate(-10); } //rotate left
-  if( rightKey == true) { bob.rotate(10); } //rotate right
-  if( upKey == true) { bob.accelerate(0.1); } //accelerate
-  if( downKey == true) { bob.accelerate(-0.1); } //decelerate
+    if( leftKey == true) { bob.rotate(-10); } //rotate left
+    if( rightKey == true) { bob.rotate(10); } //rotate right
+    if( upKey == true) { bob.accelerate(0.1); } //accelerate
+    if( downKey == true) { bob.accelerate(-0.1); } //decelerate
 
-  bob.show();
-  bob.move();
-  textSize(32);
-  fill(255,0,0);
-  text("Score: " + scoreB,100,50);
-  }
+    bob.show();
+    bob.move();
+    textSize(32);
+    fill(255,0,0);
+    text("Score: " + scoreB,100,50);
+   }
+
   if( gameOverScreen == true){
     background(255,0,0);
     textAlign(CENTER,CENTER);
-    textSize(100);
+    textSize(90);
     fill(0,0,0);
-    text("PLAY AGAIN?", width/2, height/2);
-  }
+    text("PLAY AGAIN?", width/2, height/2 - 50);
+    textSize(50);
+    text("Click to Restart", width/2, height/2 + 50);
+   }
+ // System.out.println(bob.getX());
 }
 
 public void mousePressed(){
-  if( mouseX < width && mouseY < height){
-  startGame = true;
-  gameOverScreen = false;
- }
+  if( mouseX < width && mouseY < height && gameOverScreen == false){
+    startGame = true;
+    gameOverScreen = false;
+   }
+  if( mouseX < width && mouseY < height && gameOverScreen == true){
+    gameOverScreen = false;
+    startGame = false;
+   }
 }
+
 public void keyPressed(){
   if( keyCode == LEFT){ leftKey = true; } //rotate left
   if( keyCode == RIGHT){ rightKey = true; } //rotate right
   if( keyCode == UP){ upKey = true; } //accelerate
   if( keyCode == DOWN){ downKey = true; } //decelerate
-  if( key == ' ') //hyperspace
-  {
+  if( key == ' '){ //hyperspace
     bob.setX((int)(Math.random()*500));   
     bob.setY((int)(Math.random()*500));
     bob.setDirectionX(0);
     bob.setDirectionY(0);
     bob.setPointDirection((int)(Math.random()*360));
-  }
+   }
   if( key == 'd'){ bullList.add(new Bullets(bob)); } //add bullet to list and shoots
-  if( key == 's'){
-    for( int i = 0; i < 360; i+= 10){
+  if( key == 's'){ //hack function
+    for( int i = 0; i < 365; i += 5){
       bullList.add(new Bullets(bob));
       bullList.get(bullList.size() - 1).hackSaver(i+10);
-    }
-  }
+     }
+   }
 }
 
 public void keyReleased(){
@@ -134,6 +156,7 @@ public void keyReleased(){
   if( keyCode == UP){ upKey = false; } //accelerate
   if( keyCode == DOWN){ downKey = false; } //decelerate
 }
+
 class Stars
 {
   int myColor;
